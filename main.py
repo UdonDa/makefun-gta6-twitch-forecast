@@ -39,7 +39,11 @@ def finish(values):
 
 
 def utc_time(value):
-    return datetime.fromisoformat(value.replace('Z', '+00:00')).astimezone(timezone.utc)
+    parsed = datetime.fromisoformat(value.replace('Z', '+00:00'))
+    # Treat offset-free case timestamps as UTC, independent of the host timezone.
+    if parsed.tzinfo is None:
+        parsed = parsed.replace(tzinfo=timezone.utc)
+    return parsed.astimezone(timezone.utc)
 
 
 def release_day_rows(comparable):
